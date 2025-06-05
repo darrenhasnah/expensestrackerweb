@@ -21,9 +21,9 @@ class ComposerStaticInita423af5e195a5e5dcf26eee7de81330f
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
         ),
-        'D' => 
+        'A' => 
         array (
-            'Darre\\ProjectWeb2\\' => 18,
+            'App\\' => 4,
         ),
     );
 
@@ -40,7 +40,7 @@ class ComposerStaticInita423af5e195a5e5dcf26eee7de81330f
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Darre\\ProjectWeb2\\' => 
+        'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),

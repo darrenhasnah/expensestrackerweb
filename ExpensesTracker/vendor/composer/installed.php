@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'darre/project_web2',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '7497ca63a281827b543e566452c80498ac15cd57',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'darre/project_web2' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '7497ca63a281827b543e566452c80498ac15cd57',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

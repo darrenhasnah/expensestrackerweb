@@ -1,8 +1,8 @@
 {
-    "name": "darre/project_web2",
+     "name": "darre/project_web2",
     "autoload": {
         "psr-4": {
-            "Darre\\ProjectWeb2\\": "src/"
+            "App\\": "src/"
         }
     },
     "authors": [
