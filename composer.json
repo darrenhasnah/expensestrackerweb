@@ -1,0 +1,17 @@
+{
+    "name": "darre/project_web2",
+    "autoload": {
+        "psr-4": {
+            "Darre\\ProjectWeb2\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Darren Hasnah",
+            "email": "159036668+darrenhasnah@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "3.5"
+    }
+}
