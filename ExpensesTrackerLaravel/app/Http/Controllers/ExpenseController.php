@@ -2,9 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expense;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ExpenseController extends Controller
 {
-    //
+    // Dashboard dengan form input dan riwayat
+    public function dashboard()
+    {
+        $expenses = Auth::user()->expenses()
+                        ->orderBy('date', 'desc')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+        
+        $totalExpenses = $expenses->sum('amount');
+        
+        return view('dashboard', compact('expenses', 'totalExpenses'));
+    }
+
+    // Simpan pengeluaran baru
+    public function store(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'category' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'date' => 'required|date',
+        ]);
+
+        Expense::create([
+            'user_id' => Auth::id(),
+            'amount' => $request->amount,
+            'category' => $request->category,
+            'description' => $request->description,
+            'date' => $request->date,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Pengeluaran berhasil ditambahkan!');
+    }
 }
