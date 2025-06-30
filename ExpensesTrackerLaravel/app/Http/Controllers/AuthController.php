@@ -10,54 +10,61 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    // Tampilkan halaman register/login
     public function showAuth()
     {
-        // Jika sudah login, redirect ke dashboard
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
         return view('auth.auth');
     }
 
-    // Proses Register
     public function register(Request $request)
     {
         $request->validate([
             'email' => 'required|email|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)],
+        ], [
+            'email.unique' => 'Email sudah terdaftar, silakan gunakan email lain.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok dengan password.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password wajib diisi.',
         ]);
 
+        // Buat user baru dengan password ter-hash
         User::create([
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password, // Auto-hash karena mutator
         ]);
 
-        // TIDAK auto login - redirect ke halaman auth dengan pesan sukses
-        return redirect()->route('auth')->with('success', 'Registration successful! Please login with your credentials.');
+        return redirect()->route('auth')->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
     }
 
-    // Proses Login
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password wajib diisi.',
         ]);
 
         $credentials = $request->only('email', 'password');
 
+        // Auth::attempt() otomatis menggunakan Hash::check()
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('dashboard')->with('success', 'Login berhasil!');
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
+            'login' => 'Email atau password salah. Silakan coba lagi.',
         ])->onlyInput('email');
     }
 
-    // Proses Logout
     public function logout(Request $request)
     {
         Auth::logout();
