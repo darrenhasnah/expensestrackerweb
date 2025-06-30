@@ -1,5 +1,3 @@
-
-
 @props([
     'type' => 'button',
     'variant' => 'primary',
@@ -9,32 +7,27 @@
 ])
 
 @php
-    $baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+    $baseClasses = '';
     
     $variantClasses = [
-        'primary' => 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
-        'success' => 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
-        'danger' => 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
-        'secondary' => 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500',
+        'primary' => 'background: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 3px;',
+        'success' => 'background: #28a745; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 3px;',
+        'danger' => 'background: #dc3545; color: white; padding: 8px 16px; border: none; cursor: pointer; border-radius: 3px;',
+        'secondary' => 'background: #6c757d; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 3px;',
     ];
     
-    $sizeClasses = [
-        'sm' => 'px-3 py-2 text-sm',
-        'md' => 'px-4 py-2 text-base',
-        'lg' => 'px-6 py-3 text-lg',
-    ];
-    
-    $classes = $baseClasses . ' ' . $variantClasses[$variant] . ' ' . $sizeClasses[$size];
+    $styles = $variantClasses[$variant] ?? $variantClasses['primary'];
 @endphp
 
 @if($href)
-    <a href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }}>
+    <a href="{{ $href }}" style="{{ $styles }}" {{ $attributes }}>
         {{ $slot }}
     </a>
 @else
     <button 
         type="{{ $submit ? 'submit' : $type }}" 
-        {{ $attributes->merge(['class' => $classes]) }}
+        style="{{ $styles }}"
+        {{ $attributes }}
     >
         {{ $slot }}
     </button>
