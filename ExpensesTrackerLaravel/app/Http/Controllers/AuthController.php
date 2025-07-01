@@ -32,10 +32,10 @@ class AuthController extends Controller
             'password.required' => 'Password wajib diisi.',
         ]);
 
-        // Buat user baru dengan password ter-hash
+        //user baru dgn password hash
         User::create([
             'email' => $request->email,
-            'password' => $request->password, // Auto-hash karena mutator
+            'password' => $request->password, // Autohash karna mutator
         ]);
 
         return redirect()->route('auth')->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
