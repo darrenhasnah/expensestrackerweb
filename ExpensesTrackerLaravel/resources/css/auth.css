@@ -81,6 +81,19 @@
     @apply border-slate-300 bg-white/90;
   }
   
+  /* Fix text color for email input when focused */
+  .auth-input[type="email"] {
+    @apply w-full px-4 py-3.5 bg-slate-50/80 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white focus:text-blue-800;
+  }
+  
+  .auth-input[type="email"]:hover {
+    @apply border-slate-300 bg-white/90;
+  }
+  
+  .auth-projector-input[type="email"] {
+    @apply text-lg px-5 py-4 border-2 border-slate-300 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-500/20 focus:text-blue-800;
+  }
+  
   /* Password Input Styling */
   .auth-input[type="password"] {
     @apply w-full px-4 py-3.5 bg-slate-50/80 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white;
@@ -150,7 +163,14 @@
   /* Alert Messages */
   .auth-alert {
     @apply p-4 rounded-xl mb-6 border shadow-lg backdrop-blur-sm;
-    position: relative;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    max-width: 90%;
+    width: auto;
+    min-width: 300px;
     overflow: hidden;
   }
   
@@ -167,21 +187,25 @@
   .auth-alert-success {
     @apply bg-emerald-50/90 border-emerald-200/60 text-emerald-800;
     backdrop-filter: blur(10px);
+    animation: authSlideInFromTop 0.6s ease-out;
   }
   
   .auth-alert-error {
     @apply bg-red-50/90 border-red-200/60 text-red-800;
     backdrop-filter: blur(10px);
+    animation: authSlideInFromTop 0.6s ease-out;
   }
   
   .auth-alert-warning {
     @apply bg-amber-50/90 border-amber-200/60 text-amber-800;
     backdrop-filter: blur(10px);
+    animation: authSlideInFromTop 0.6s ease-out;
   }
   
   .auth-alert-info {
     @apply bg-blue-50/90 border-blue-200/60 text-blue-800;
     backdrop-filter: blur(10px);
+    animation: authSlideInFromTop 0.6s ease-out;
   }
   
   /* Logout Success Alert - Special styling */
@@ -193,6 +217,11 @@
   
   .auth-alert-logout::before {
     background: linear-gradient(90deg, #10b981, #3b82f6, #10b981);
+  }
+  
+  /* Auto-hide animation for alerts */
+  .auth-alert-hiding {
+    animation: authSlideOutToTop 0.4s ease-in forwards;
   }
   
   /* Compact alert for better layout */
@@ -440,15 +469,26 @@
 @keyframes authSlideInFromTop {
   0% {
     opacity: 0;
-    transform: translateY(-20px) scale(0.95);
+    transform: translateX(-50%) translateY(-100px) scale(0.95);
   }
   60% {
     opacity: 1;
-    transform: translateY(5px) scale(1.02);
+    transform: translateX(-50%) translateY(5px) scale(1.02);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes authSlideOutToTop {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100px) scale(0.95);
   }
 }
 

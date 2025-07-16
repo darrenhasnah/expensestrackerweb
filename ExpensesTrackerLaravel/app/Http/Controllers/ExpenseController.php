@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ExpenseController extends Controller
 {
-    // Dashboard dengan form input dan riwayat
     public function dashboard()
     {
+        if (!Auth::check()) {
+            return redirect()->route('auth')->with('error', 'Silakan login terlebih dahulu.');
+        }
+        
         $expenses = Auth::user()->expenses()
                         ->orderBy('date', 'desc')
                         ->orderBy('created_at', 'desc')
@@ -21,8 +24,7 @@ class ExpenseController extends Controller
         
         return view('dashboard', compact('expenses', 'totalExpenses'));
     }
-
-    // Simpan pengeluaran baru
+    
     public function store(Request $request)
     {
         $request->validate([

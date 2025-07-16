@@ -209,6 +209,25 @@
         // Initialize with register form active
         document.addEventListener('DOMContentLoaded', function() {
             showRegister();
+            
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.auth-alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.add('auth-alert-hiding');
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 400); // Wait for animation to complete
+                }, 5000);
+                
+                // Allow manual close by clicking
+                alert.addEventListener('click', function() {
+                    alert.classList.add('auth-alert-hiding');
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 400);
+                });
+            });
         });
     </script>
 </body>

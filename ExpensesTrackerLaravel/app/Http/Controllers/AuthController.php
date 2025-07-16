@@ -15,6 +15,7 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
+        
         return view('auth.auth');
     }
 
@@ -73,10 +74,19 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        // Clear remember token from database if user was remembered
+        if (Auth::user()) {
+            Auth::user()->setRememberToken(null);
+            Auth::user()->save();
+        }
+        
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        return redirect()->route('auth')->with('success', 'Anda telah logout.');
+        // Clear remember cookie from browser
+        return redirect()->route('auth')
+            ->with('success', 'Anda telah logout.')
+            ->withCookie(cookie()->forget('remember_web'));
     }
 }

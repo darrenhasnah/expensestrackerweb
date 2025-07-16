@@ -1,0 +1,273 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Dashboard Container */
+  .dashboard-container {
+    @apply min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(45deg, #f8fafc, #e0f2fe, #dbeafe, #e0e7ff, #f1f5f9);
+    background-size: 400% 400%;
+    animation: dashboardGradientRotate 12s ease infinite;
+  }
+
+  /* Header Section */
+  .dashboard-header {
+    @apply bg-white/90 backdrop-blur-lg border-b border-slate-200/60 shadow-sm;
+    background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9));
+  }
+
+  .dashboard-nav {
+    @apply max-w-7xl mx-auto px-6 py-4 flex items-center justify-between;
+  }
+
+  .dashboard-brand {
+    @apply flex items-center space-x-3;
+  }
+
+  .dashboard-logo {
+    @apply w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg;
+  }
+
+  .dashboard-title {
+    @apply text-xl font-bold text-slate-800 tracking-tight;
+  }
+
+  .dashboard-subtitle {
+    @apply text-sm text-slate-600 font-medium;
+  }
+
+  .dashboard-user-info {
+    @apply flex items-center space-x-4;
+  }
+
+  .dashboard-welcome {
+    @apply text-sm text-slate-600;
+  }
+
+  .dashboard-user-email {
+    @apply font-semibold text-slate-800;
+  }
+
+  /* Main Content */
+  .dashboard-main {
+    @apply max-w-7xl mx-auto px-6 py-8;
+  }
+
+  .dashboard-grid {
+    @apply grid grid-cols-1 lg:grid-cols-3 gap-8;
+  }
+
+  /* Cards */
+  .dashboard-card {
+    @apply bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl border border-slate-200/60 p-6;
+    background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9));
+    transition: all 0.3s ease;
+  }
+
+  .dashboard-card:hover {
+    @apply shadow-2xl scale-[1.02];
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .dashboard-card-header {
+    @apply flex items-center justify-between mb-6;
+  }
+
+  .dashboard-card-title {
+    @apply text-xl font-bold text-slate-800 flex items-center space-x-2;
+  }
+
+  .dashboard-card-icon {
+    @apply w-6 h-6 text-blue-600;
+  }
+
+  /* Form Styling */
+  .dashboard-form {
+    @apply space-y-6;
+  }
+
+  .dashboard-form-group {
+    @apply space-y-2;
+  }
+
+  .dashboard-label {
+    @apply block text-sm font-semibold text-slate-700 tracking-wide;
+  }
+
+  .dashboard-input {
+    @apply w-full px-4 py-3 bg-slate-50/80 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white;
+  }
+
+  .dashboard-input:hover {
+    @apply border-slate-300 bg-white/90;
+  }
+
+  .dashboard-select {
+    @apply w-full px-4 py-3 bg-slate-50/80 border border-slate-200 rounded-xl text-slate-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white;
+  }
+
+  .dashboard-textarea {
+    @apply w-full px-4 py-3 bg-slate-50/80 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white resize-none;
+  }
+
+  /* Buttons */
+  .dashboard-btn {
+    @apply px-6 py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg;
+  }
+
+  .dashboard-btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 focus:ring-blue-500 shadow-xl;
+  }
+
+  .dashboard-btn-primary:hover {
+    transform: translateY(-1px);
+    @apply shadow-2xl;
+  }
+
+  .dashboard-btn-danger {
+    @apply bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-500;
+  }
+
+  .dashboard-btn-danger:hover {
+    transform: translateY(-1px);
+    @apply shadow-xl;
+  }
+
+  /* Stats Cards */
+  .dashboard-stats {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6 mb-8;
+  }
+
+  .dashboard-stat-card {
+    @apply bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl border border-slate-200/60 p-6 text-center;
+    background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9));
+  }
+
+  .dashboard-stat-value {
+    @apply text-3xl font-bold text-slate-800 mb-2;
+  }
+
+  .dashboard-stat-label {
+    @apply text-sm font-semibold text-slate-600 uppercase tracking-wide;
+  }
+
+  /* Table Styling */
+  .dashboard-table-container {
+    @apply overflow-hidden rounded-2xl shadow-xl border border-slate-200/60;
+    background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9));
+  }
+
+  .dashboard-table {
+    @apply w-full;
+  }
+
+  .dashboard-table-header {
+    @apply bg-gradient-to-r from-slate-100 to-slate-50 border-b border-slate-200;
+  }
+
+  .dashboard-table-th {
+    @apply px-6 py-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider;
+  }
+
+  .dashboard-table-row {
+    @apply border-b border-slate-100 hover:bg-slate-50/50 transition-colors duration-200;
+  }
+
+  .dashboard-table-td {
+    @apply px-6 py-4 text-sm text-slate-800;
+  }
+
+  /* Alerts */
+  .dashboard-alert {
+    @apply p-4 rounded-xl border shadow-lg mb-6 backdrop-blur-lg;
+  }
+
+  .dashboard-alert-success {
+    @apply bg-green-50/90 border-green-200 text-green-800;
+  }
+
+  .dashboard-alert-error {
+    @apply bg-red-50/90 border-red-200 text-red-800;
+  }
+
+  /* Empty State */
+  .dashboard-empty {
+    @apply text-center py-12;
+  }
+
+  .dashboard-empty-icon {
+    @apply w-16 h-16 mx-auto mb-4 text-slate-400;
+  }
+
+  .dashboard-empty-title {
+    @apply text-xl font-semibold text-slate-600 mb-2;
+  }
+
+  .dashboard-empty-text {
+    @apply text-slate-500;
+  }
+
+  /* Animations */
+  @keyframes dashboardGradientRotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .dashboard-fade-in {
+    animation: dashboardFadeIn 0.6s ease-out;
+  }
+
+  @keyframes dashboardFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .dashboard-scale-in {
+    animation: dashboardScaleIn 0.5s ease-out;
+  }
+
+  @keyframes dashboardScaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      @apply grid-cols-1;
+    }
+    
+    .dashboard-nav {
+      @apply flex-col space-y-3 text-center;
+    }
+    
+    .dashboard-user-info {
+      @apply flex-col space-y-2 space-x-0;
+    }
+  }
+
+  /* Category Colors */
+  .category-makanan { @apply bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-semibold; }
+  .category-transportasi { @apply bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold; }
+  .category-belanja { @apply bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold; }
+  .category-hiburan { @apply bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-xs font-semibold; }
+  .category-kesehatan { @apply bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold; }
+  .category-lainnya { @apply bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold; }
+}
