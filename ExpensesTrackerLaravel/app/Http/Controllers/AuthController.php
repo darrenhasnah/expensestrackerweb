@@ -53,11 +53,17 @@ class AuthController extends Controller
         ]);
 
         $credentials = $request->only('email', 'password');
+        $remember = $request->has('remember'); // Check if remember me is checked
 
-        // Auth::attempt() otomatis menggunakan Hash::check()
-        if (Auth::attempt($credentials)) {
+        // Auth::attempt() dengan remember parameter
+        if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-            return redirect()->route('dashboard')->with('success', 'Login berhasil!');
+            
+            $message = $remember ? 
+                'Login berhasil! Anda akan tetap login selama 30 hari.' : 
+                'Login berhasil!';
+                
+            return redirect()->route('dashboard')->with('success', $message);
         }
 
         return back()->withErrors([

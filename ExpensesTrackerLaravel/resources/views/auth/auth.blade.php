@@ -8,7 +8,7 @@
 </head>
 <body class="auth-container">
     
-    <!-- Success/Error Messages -->
+    <!-- Success Error Messages -->
     @if(session('success'))
         <div class="auth-alert auth-alert-logout auth-slide-up">
             <div class="flex items-center space-x-3">
@@ -151,6 +151,14 @@
                     </div>
                 </div>
 
+                <!-- Remember Me Checkbox -->
+                <div class="auth-checkbox-group">
+                    <div class="auth-checkbox-wrapper">
+                        <input type="checkbox" name="remember" id="remember" class="auth-checkbox">
+                        <label for="remember" class="auth-checkbox-label auth-projector-text">Remember me</label>
+                    </div>
+                </div>
+                
                 <button type="submit" class="auth-btn auth-btn-primary auth-projector-btn">
                     <span class="flex items-center justify-center space-x-2">
                         <svg class="auth-icon-white" fill="currentColor" viewBox="0 0 20 20">
