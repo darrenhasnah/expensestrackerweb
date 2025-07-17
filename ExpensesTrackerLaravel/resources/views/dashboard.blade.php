@@ -70,18 +70,137 @@
             </div>
         @endif
 
-        <div class="dashboard-stats">
-            <div class="dashboard-stat-card dashboard-scale-in">
-                <div class="dashboard-stat-value text-blue-600">
-                    Rp {{ number_format($totalExpenses ?? 0, 0, ',', '.') }}
+        <!-- Enhanced Stats Section - Option A -->
+        <div class="dashboard-stats-section">
+            <!-- Month Selector -->
+            <div class="dashboard-month-selector mb-6">
+                <div class="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-200 p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="text-sm font-semibold text-gray-700">Filter Bulan:</span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <select id="monthSelector" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                @for($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ $i == now()->month ? 'selected' : '' }}>
+                                        {{ DateTime::createFromFormat('!m', $i)->format('F') }}
+                                    </option>
+                                @endfor
+                            </select>
+                            <select id="yearSelector" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                @for($year = now()->year - 2; $year <= now()->year + 1; $year++)
+                                    <option value="{{ $year }}" {{ $year == now()->year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endfor
+                            </select>
+                            <button id="resetToCurrentMonth" class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors">
+                                Bulan Ini
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="dashboard-stat-label">Total Pengeluaran</div>
             </div>
-            <div class="dashboard-stat-card dashboard-scale-in" style="animation-delay: 0.1s;">
-                <div class="dashboard-stat-value text-indigo-600">
-                    {{ isset($expenses) ? $expenses->count() : 0 }}
+
+            <div class="dashboard-stats-grid">
+                
+                <!-- Total Pengeluaran Card -->
+                <div class="dashboard-stats-card-enhanced dashboard-stats-card-money-enhanced dashboard-bounce-in">
+                    <div class="dashboard-stats-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <div class="dashboard-stats-value">Rp {{ number_format($totalExpenses ?? 0, 0, ',', '.') }}</div>
+                    <div class="dashboard-stats-label">Total Pengeluaran</div>
+                    <div class="dashboard-stats-trend">
+                        <span class="text-blue-600">💰</span>
+                        <span class="text-gray-500">Semua waktu</span>
+                    </div>
                 </div>
-                <div class="dashboard-stat-label">Total Transaksi</div>
+
+                <!-- Total Transaksi Card -->
+                <div class="dashboard-stats-card-enhanced dashboard-stats-card-transaction-enhanced dashboard-bounce-in" style="animation-delay: 0.1s;">
+                    <div class="dashboard-stats-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div class="dashboard-stats-value">{{ isset($expenses) ? $expenses->count() : 0 }}</div>
+                    <div class="dashboard-stats-label">Total Transaksi</div>
+                    <div class="dashboard-stats-trend">
+                        <span class="text-emerald-600">📊</span>
+                        <span class="text-gray-500">Jumlah entri</span>
+                    </div>
+                </div>
+
+                <!-- Average per Transaction -->
+                <div class="dashboard-stats-card-enhanced dashboard-bounce-in" style="animation-delay: 0.2s;">
+                    <div class="dashboard-stats-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    @php
+                        $totalExpenses = $totalExpenses ?? 0;
+                        $expenseCount = isset($expenses) ? $expenses->count() : 0;
+                        $average = $expenseCount > 0 ? $totalExpenses / $expenseCount : 0;
+                    @endphp
+                    <div class="dashboard-stats-value">Rp {{ number_format($average, 0, ',', '.') }}</div>
+                    <div class="dashboard-stats-label">Rata-rata per Transaksi</div>
+                    <div class="dashboard-stats-trend">
+                        <span class="text-indigo-600">📈</span>
+                        <span class="text-gray-500">Per pengeluaran</span>
+                    </div>
+                </div>
+
+                <!-- This Month Expenses -->
+                <div class="dashboard-stats-card-enhanced dashboard-bounce-in" style="animation-delay: 0.3s;">
+                    <div class="dashboard-stats-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    @php
+                        $currentMonth = now()->month;
+                        $currentYear = now()->year;
+                        $monthlyExpenses = 0;
+                        $monthlyTransactions = 0;
+                        
+                        if (isset($expenses) && $expenses->count() > 0) {
+                            $filteredExpenses = $expenses->filter(function($expense) use ($currentMonth, $currentYear) {
+                                return $expense->date->month == $currentMonth && $expense->date->year == $currentYear;
+                            });
+                            $monthlyExpenses = $filteredExpenses->sum('amount');
+                            $monthlyTransactions = $filteredExpenses->count();
+                        }
+                    @endphp
+                    <div class="dashboard-stats-value" id="monthlyExpensesValue">Rp {{ number_format($monthlyExpenses, 0, ',', '.') }}</div>
+                    <div class="dashboard-stats-label">Pengeluaran Bulan Terpilih</div>
+                    <div class="dashboard-stats-trend">
+                        <span class="text-purple-600">🗓️</span>
+                        <span class="text-gray-500" id="selectedMonthText">{{ now()->format('M Y') }}</span>
+                    </div>
+                </div>
+
+                <!-- Monthly Transactions Count -->
+                <div class="dashboard-stats-card-enhanced dashboard-bounce-in" style="animation-delay: 0.4s;">
+                    <div class="dashboard-stats-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="dashboard-stats-value" id="monthlyTransactionsValue">{{ $monthlyTransactions }}</div>
+                    <div class="dashboard-stats-label">Transaksi Bulan Terpilih</div>
+                    <div class="dashboard-stats-trend">
+                        <span class="text-orange-600">📝</span>
+                        <span class="text-gray-500">Total entri</span>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -211,6 +330,46 @@
     </main>
 
     <script>
+        // Data untuk JavaScript
+        const expensesData = @json($expenses ?? collect());
+        
+        // Function to update monthly stats
+        function updateMonthlyStats() {
+            const selectedMonth = parseInt(document.getElementById('monthSelector').value);
+            const selectedYear = parseInt(document.getElementById('yearSelector').value);
+            
+            // Filter expenses for selected month/year
+            const filteredExpenses = expensesData.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate.getMonth() + 1 === selectedMonth && expenseDate.getFullYear() === selectedYear;
+            });
+            
+            // Calculate totals
+            const monthlyTotal = filteredExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+            const monthlyCount = filteredExpenses.length;
+            
+            // Update UI
+            document.getElementById('monthlyExpensesValue').textContent = 'Rp ' + monthlyTotal.toLocaleString('id-ID');
+            document.getElementById('monthlyTransactionsValue').textContent = monthlyCount;
+            
+            // Update month text
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            document.getElementById('selectedMonthText').textContent = months[selectedMonth - 1] + ' ' + selectedYear;
+        }
+        
+        // Event listeners
+        document.getElementById('monthSelector').addEventListener('change', updateMonthlyStats);
+        document.getElementById('yearSelector').addEventListener('change', updateMonthlyStats);
+        
+        // Reset to current month
+        document.getElementById('resetToCurrentMonth').addEventListener('click', function() {
+            const now = new Date();
+            document.getElementById('monthSelector').value = now.getMonth() + 1;
+            document.getElementById('yearSelector').value = now.getFullYear();
+            updateMonthlyStats();
+        });
+
+        // Auto-hide alerts
         setTimeout(() => {
             const alerts = document.querySelectorAll('.dashboard-alert');
             alerts.forEach(alert => {
@@ -220,6 +379,7 @@
             });
         }, 5000);
         
+        // Card animations
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.dashboard-card');
             cards.forEach((card, index) => {
