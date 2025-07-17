@@ -374,9 +374,126 @@
         </div>
     </main>
 
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform transition-all duration-300 scale-95" id="editModalContent">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-gray-800 flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <span>Edit Pengeluaran</span>
+                    </h3>
+                    <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <form id="editExpenseForm" class="p-6 space-y-4">
+                <input type="hidden" id="editExpenseId" name="id">
+                
+                <div class="dashboard-form-group">
+                    <label class="dashboard-label">Tanggal</label>
+                    <input type="date" id="editDate" name="date" class="dashboard-input" required>
+                </div>
+                
+                <div class="dashboard-form-group">
+                    <label class="dashboard-label">Kategori</label>
+                    <select id="editCategory" name="category" class="dashboard-select" required>
+                        <option value="">Pilih Kategori</option>
+                        <option value="makanan">🍽️ Makanan</option>
+                        <option value="transportasi">🚗 Transportasi</option>
+                        <option value="belanja">🛍️ Belanja</option>
+                        <option value="hiburan">🎬 Hiburan</option>
+                        <option value="kesehatan">🏥 Kesehatan</option>
+                        <option value="lainnya">📝 Lainnya</option>
+                    </select>
+                </div>
+                
+                <div class="dashboard-form-group">
+                    <label class="dashboard-label">Jumlah (Rupiah)</label>
+                    <input type="number" step="0.01" min="0.01" id="editAmount" name="amount" class="dashboard-input" required>
+                </div>
+                
+                <div class="dashboard-form-group">
+                    <label class="dashboard-label">Deskripsi (Optional)</label>
+                    <textarea id="editDescription" name="description" rows="3" class="dashboard-textarea" placeholder="Catatan tambahan untuk pengeluaran ini..."></textarea>
+                </div>
+                
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="closeEditModal()" class="flex-1 dashboard-btn dashboard-btn-secondary">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 dashboard-btn dashboard-btn-primary">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="fixed inset-0 bg-black bg-opacity-30 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 shadow-2xl flex items-center space-x-3">
+            <svg class="animate-spin h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-gray-700 font-medium">Processing...</span>
+        </div>
+    </div>
+
     <script>
         // Data untuk JavaScript
-        const expensesData = @json($expenses ?? collect());
+        let expensesData = @json($expenses ?? collect());
+        
+        // CSRF Token untuk AJAX requests
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+                         || document.querySelector('input[name="_token"]')?.value;
+        
+        // Function to show loading spinner
+        function showLoading() {
+            document.getElementById('loadingSpinner').classList.remove('hidden');
+            document.getElementById('loadingSpinner').classList.add('flex');
+        }
+        
+        // Function to hide loading spinner
+        function hideLoading() {
+            document.getElementById('loadingSpinner').classList.add('hidden');
+            document.getElementById('loadingSpinner').classList.remove('flex');
+        }
+        
+        // Function to show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `dashboard-alert dashboard-alert-${type} dashboard-fade-in`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3 ${type === 'success' ? 'text-green-600' : 'text-red-600'}" fill="currentColor" viewBox="0 0 20 20">
+                        ${type === 'success' 
+                            ? '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>'
+                            : '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>'
+                        }
+                    </svg>
+                    <span class="font-semibold">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(-100px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
         
         // Function to update monthly stats
         function updateMonthlyStats() {
@@ -402,6 +519,289 @@
             document.getElementById('selectedMonthText').textContent = months[selectedMonth - 1] + ' ' + selectedYear;
         }
         
+        // Function to update all stats cards
+        function updateAllStats() {
+            // Calculate total expenses and count
+            const totalExpenses = expensesData.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+            const totalCount = expensesData.length;
+            const average = totalCount > 0 ? totalExpenses / totalCount : 0;
+            
+            // Update total stats
+            document.querySelector('.dashboard-stats-card-money-enhanced .dashboard-stats-value').textContent = 
+                'Rp ' + totalExpenses.toLocaleString('id-ID');
+            document.querySelector('.dashboard-stats-card-transaction-enhanced .dashboard-stats-value').textContent = totalCount;
+            document.querySelector('.dashboard-stats-card-enhanced:nth-child(3) .dashboard-stats-value').textContent = 
+                'Rp ' + average.toLocaleString('id-ID');
+            
+            // Update monthly stats
+            updateMonthlyStats();
+        }
+        
+        // Function to get category badge HTML
+        function getCategoryBadge(category) {
+            const categories = {
+                'makanan': { class: 'dashboard-category-food', emoji: '🍽️', name: 'Makanan' },
+                'transportasi': { class: 'dashboard-category-transport', emoji: '🚗', name: 'Transportasi' },
+                'belanja': { class: 'dashboard-category-shopping', emoji: '🛍️', name: 'Belanja' },
+                'hiburan': { class: 'dashboard-category-entertainment', emoji: '🎬', name: 'Hiburan' },
+                'kesehatan': { class: 'dashboard-category-health', emoji: '🏥', name: 'Kesehatan' },
+                'lainnya': { class: 'dashboard-category-other', emoji: '📝', name: 'Lainnya' }
+            };
+            
+            const cat = categories[category] || categories['lainnya'];
+            return `<span class="dashboard-category-badge ${cat.class}">${cat.emoji} ${cat.name}</span>`;
+        }
+        
+        // Function to format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return {
+                short: date.toLocaleDateString('id-ID'),
+                day: days[date.getDay()]
+            };
+        }
+        
+        // Function to update table
+        function updateTable() {
+            const container = document.querySelector('.dashboard-table-container');
+            
+            if (expensesData.length === 0) {
+                // Show empty state
+                container.innerHTML = `
+                    <div class="dashboard-empty-state">
+                        <svg class="dashboard-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        <h3 class="dashboard-empty-title">Belum Ada Pengeluaran</h3>
+                        <p class="dashboard-empty-text">Mulai dengan menambahkan pengeluaran pertama Anda menggunakan form di sebelah kiri.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Ensure table exists
+            if (!container.querySelector('.dashboard-table')) {
+                container.innerHTML = `
+                    <div class="dashboard-table-scroll">
+                        <table class="dashboard-table">
+                            <thead class="dashboard-table-header">
+                                <tr>
+                                    <th class="dashboard-table-cell-date">Tanggal</th>
+                                    <th class="dashboard-table-cell-category">Kategori</th>
+                                    <th class="dashboard-table-cell-amount">Jumlah</th>
+                                    <th class="dashboard-table-cell-description">Deskripsi</th>
+                                    <th class="dashboard-table-cell-actions">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            // Update tbody
+            const tbody = container.querySelector('tbody');
+            tbody.innerHTML = expensesData.map(expense => {
+                const dateInfo = formatDate(expense.date);
+                return `
+                    <tr class="dashboard-table-row" data-expense-id="${expense.id}">
+                        <td class="dashboard-table-cell-date">
+                            <div class="font-semibold text-gray-800">${dateInfo.short}</div>
+                            <div class="text-xs text-gray-500">${dateInfo.day}</div>
+                        </td>
+                        <td class="dashboard-table-cell-category">
+                            ${getCategoryBadge(expense.category)}
+                        </td>
+                        <td class="dashboard-table-cell-amount">
+                            <div class="font-bold text-gray-800">
+                                Rp ${parseFloat(expense.amount).toLocaleString('id-ID')}
+                            </div>
+                        </td>
+                        <td class="dashboard-table-cell-description">
+                            <div class="text-gray-700" title="${expense.description || 'Tidak ada deskripsi'}">
+                                ${expense.description || '-'}
+                            </div>
+                        </td>
+                        <td class="dashboard-table-cell-actions">
+                            <div class="flex space-x-2">
+                                <button class="dashboard-btn dashboard-btn-small dashboard-btn-secondary" 
+                                        onclick="editExpense(${expense.id})" 
+                                        title="Edit">
+                                    ✏️
+                                </button>
+                                <button class="dashboard-btn dashboard-btn-small dashboard-btn-danger" 
+                                        onclick="deleteExpense(${expense.id})" 
+                                        title="Hapus">
+                                    🗑️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Function to add expense via AJAX
+        async function addExpenseAjax(formData) {
+            try {
+                showLoading();
+                
+                const response = await fetch('/expenses', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Add new expense to local data
+                    expensesData.unshift(result.expense);
+                    
+                    // Update UI
+                    updateTable();
+                    updateAllStats();
+                    
+                    // Reset form
+                    document.querySelector('.dashboard-form').reset();
+                    document.querySelector('input[name="date"]').value = new Date().toISOString().split('T')[0];
+                    
+                    showToast('Pengeluaran berhasil ditambahkan!', 'success');
+                } else {
+                    throw new Error(result.message || 'Terjadi kesalahan');
+                }
+            } catch (error) {
+                console.error('Error adding expense:', error);
+                showToast('Gagal menambahkan pengeluaran: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Function to edit expense
+        async function editExpense(id) {
+            const expense = expensesData.find(exp => exp.id === id);
+            if (!expense) return;
+            
+            // Populate modal
+            document.getElementById('editExpenseId').value = expense.id;
+            document.getElementById('editDate').value = expense.date.split('T')[0];
+            document.getElementById('editCategory').value = expense.category;
+            document.getElementById('editAmount').value = expense.amount;
+            document.getElementById('editDescription').value = expense.description || '';
+            
+            // Show modal
+            const modal = document.getElementById('editModal');
+            const modalContent = document.getElementById('editModalContent');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Animate modal
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+        
+        // Function to close edit modal
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            const modalContent = document.getElementById('editModalContent');
+            
+            modalContent.classList.add('scale-95');
+            modalContent.classList.remove('scale-100');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 200);
+        }
+        
+        // Function to update expense via AJAX
+        async function updateExpenseAjax(id, formData) {
+            try {
+                showLoading();
+                
+                const response = await fetch(`/expenses/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Update local data
+                    const index = expensesData.findIndex(exp => exp.id === id);
+                    if (index !== -1) {
+                        expensesData[index] = result.expense;
+                    }
+                    
+                    // Update UI
+                    updateTable();
+                    updateAllStats();
+                    closeEditModal();
+                    
+                    showToast('Pengeluaran berhasil diupdate!', 'success');
+                } else {
+                    throw new Error(result.message || 'Terjadi kesalahan');
+                }
+            } catch (error) {
+                console.error('Error updating expense:', error);
+                showToast('Gagal mengupdate pengeluaran: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Function to delete expense
+        async function deleteExpense(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus pengeluaran ini?')) {
+                return;
+            }
+            
+            try {
+                showLoading();
+                
+                const response = await fetch(`/expenses/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Remove from local data
+                    expensesData = expensesData.filter(exp => exp.id !== id);
+                    
+                    // Update UI
+                    updateTable();
+                    updateAllStats();
+                    
+                    showToast('Pengeluaran berhasil dihapus!', 'success');
+                } else {
+                    throw new Error(result.message || 'Terjadi kesalahan');
+                }
+            } catch (error) {
+                console.error('Error deleting expense:', error);
+                showToast('Gagal menghapus pengeluaran: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
         // Event listeners
         document.getElementById('monthSelector').addEventListener('change', updateMonthlyStats);
         document.getElementById('yearSelector').addEventListener('change', updateMonthlyStats);
@@ -413,27 +813,52 @@
             document.getElementById('yearSelector').value = now.getFullYear();
             updateMonthlyStats();
         });
-
-        // Functions for edit and delete actions
-        function editExpense(id) {
-            // TODO: Implement edit functionality
-            alert('Edit functionality will be implemented soon!');
-        }
-
-        function deleteExpense(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus pengeluaran ini?')) {
-                // TODO: Implement delete functionality
-                alert('Delete functionality will be implemented soon!');
+        
+        // Add expense form submission
+        document.querySelector('.dashboard-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                date: this.date.value,
+                category: this.category.value,
+                amount: parseFloat(this.amount.value),
+                description: this.description.value
+            };
+            
+            addExpenseAjax(formData);
+        });
+        
+        // Edit expense form submission
+        document.getElementById('editExpenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = parseInt(document.getElementById('editExpenseId').value);
+            const formData = {
+                date: document.getElementById('editDate').value,
+                category: document.getElementById('editCategory').value,
+                amount: parseFloat(document.getElementById('editAmount').value),
+                description: document.getElementById('editDescription').value
+            };
+            
+            updateExpenseAjax(id, formData);
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
             }
-        }
-
-        // Auto-hide alerts
+        });
+        
+        // Auto-hide existing alerts
         setTimeout(() => {
             const alerts = document.querySelectorAll('.dashboard-alert');
             alerts.forEach(alert => {
-                alert.style.opacity = '0';
-                alert.style.transform = 'translateX(-50%) translateY(-100px)';
-                setTimeout(() => alert.remove(), 300);
+                if (!alert.id) { // Don't auto-hide our custom toasts
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateX(-50%) translateY(-100px)';
+                    setTimeout(() => alert.remove(), 300);
+                }
             });
         }, 5000);
         
@@ -447,6 +872,11 @@
             // Initialize monthly stats
             updateMonthlyStats();
         });
+        
+        // Make functions global for onclick handlers
+        window.editExpense = editExpense;
+        window.deleteExpense = deleteExpense;
+        window.closeEditModal = closeEditModal;
     </script>
 </body>
 </html>

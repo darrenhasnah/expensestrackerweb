@@ -1,13 +1,309 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 💰 Expenses Tracker Laravel
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 11">
+  <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.2+">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/Vite-6.3-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
 </p>
 
-## About Laravel
+<p align="center">
+  <strong>🎯 Personal Finance Management System</strong><br>
+  Aplikasi web untuk melacak dan mengelola pengeluaran pribadi dengan dashboard yang modern dan responsif.
+</p>
+
+---
+
+## 🚀 Quick Start Guide
+
+### 📋 Prerequisites
+
+Pastikan sudah terinstall:
+- **PHP 8.2+** dengan extensions: `mbstring`, `xml`, `ctype`, `json`, `bcmath`, `fileinfo`
+- **Composer** (Dependency Manager untuk PHP)
+- **Node.js 18+** dan **npm** (untuk asset building)
+- **MySQL/PostgreSQL** (Database)
+
+### 🛠️ Installation Steps
+
+#### 1️⃣ **Clone Repository**
+```bash
+git clone <your-repository-url>
+cd ExpensesTrackerLaravel
+```
+
+#### 2️⃣ **Install PHP Dependencies**
+```bash
+composer install
+```
+
+#### 3️⃣ **Install Node.js Dependencies**
+```bash
+npm install
+```
+
+#### 4️⃣ **Environment Setup**
+```bash
+# Copy environment file
+cp .env.example .env
+
+# Generate application key
+php artisan key:generate
+```
+
+#### 5️⃣ **Database Configuration**
+Edit file `.env` dan sesuaikan database settings:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=expenses_tracker
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
+
+#### 6️⃣ **Database Migration**
+```bash
+# Create database tables
+php artisan migrate
+
+# (Optional) Seed sample data
+php artisan db:seed
+```
+
+#### 7️⃣ **Build Assets**
+```bash
+# For development (with hot reload)
+npm run dev
+
+# For production (optimized)
+npm run build
+```
+
+#### 8️⃣ **Start Development Server**
+```bash
+php artisan serve
+```
+
+🎉 **Dashboard akan tersedia di:** `http://localhost:8000`
+
+---
+
+## 🔄 Workflow untuk Multi-Device Development
+
+### 📱 **Saat Pindah ke Device Baru:**
+
+#### **Step 1: Pull Latest Changes**
+```bash
+git pull origin main
+```
+
+#### **Step 2: Update Dependencies**
+```bash
+# Update PHP dependencies
+composer install
+
+# Update Node.js dependencies
+npm install
+```
+
+#### **Step 3: Rebuild Assets** ⚠️ **PENTING!**
+```bash
+# Build assets untuk production
+npm run build
+
+# ATAU untuk development
+npm run dev
+```
+
+#### **Step 4: Environment Check**
+```bash
+# Copy .env jika belum ada
+cp .env.example .env
+
+# Generate key jika belum ada
+php artisan key:generate
+
+# Run migrations jika ada perubahan
+php artisan migrate
+```
+
+#### **Step 5: Start Server**
+```bash
+php artisan serve
+```
+
+### 💡 **Kenapa Harus Build Ulang Assets?**
+
+- **CSS/JS Changes**: Setiap perubahan di `resources/css/` atau `resources/js/` perlu di-compile ulang
+- **Vite Manifest**: File `public/build/manifest.json` berisi mapping asset yang device-specific
+- **Hash Changes**: Vite menggunakan content hashing untuk cache busting
+- **Environment Differences**: Path dan konfigurasi bisa berbeda antar device
+
+---
+
+## 🎨 **Features Overview**
+
+### **✨ Enhanced Dashboard**
+- 📊 **5 Stats Cards**: Total pengeluaran, transaksi, rata-rata, dan data bulanan
+- 📅 **Month Selector**: Filter data berdasarkan bulan/tahun dengan real-time update
+- 🎭 **Modern UI**: Light theme dengan animasi smooth dan responsive design
+- 📱 **Mobile Friendly**: Optimized untuk semua ukuran layar
+
+### **💰 Expense Management**
+- ➕ **Add Expenses**: Form input dengan kategori dan deskripsi
+- 📋 **Expense List**: Table dengan sorting dan filtering
+- 🏷️ **Categories**: Makanan, Transportasi, Belanja, Hiburan, Kesehatan, dll
+- 📈 **Real-time Stats**: Perhitungan otomatis tanpa reload halaman
+
+### **🔐 Authentication**
+- 👤 **User Registration & Login**
+- 🔒 **Secure Session Management**
+- 🚪 **Protected Routes**
+
+---
+
+## 🛠️ **Development Commands**
+
+### **Asset Building:**
+```bash
+# Development mode (hot reload)
+npm run dev
+
+# Production build (optimized)
+npm run build
+
+# Watch mode (auto rebuild on changes)
+npm run dev -- --watch
+```
+
+### **Laravel Commands:**
+```bash
+# Start development server
+php artisan serve
+
+# Run migrations
+php artisan migrate
+
+# Reset database with fresh migrations
+php artisan migrate:fresh
+
+# Generate new Laravel key
+php artisan key:generate
+
+# Clear all caches
+php artisan optimize:clear
+```
+
+### **Database Management:**
+```bash
+# Create new migration
+php artisan make:migration create_table_name
+
+# Create new model
+php artisan make:model ModelName
+
+# Create controller
+php artisan make:controller ControllerName
+```
+
+---
+
+## 📁 **Project Structure**
+
+```
+ExpensesTrackerLaravel/
+├── 📂 app/
+│   ├── 📂 Http/Controllers/     # Controllers
+│   └── 📂 Models/               # Eloquent Models
+├── 📂 resources/
+│   ├── 📂 css/
+│   │   ├── app.css              # Main CSS
+│   │   ├── auth.css             # Authentication styles
+│   │   └── dashboard.css        # 🎨 Dashboard styles (Enhanced)
+│   ├── 📂 js/
+│   │   └── app.js               # Main JavaScript
+│   └── 📂 views/
+│       ├── dashboard.blade.php  # 🎯 Main Dashboard (Enhanced)
+│       └── auth/                # Authentication views
+├── 📂 public/
+│   └── 📂 build/                # Compiled assets (auto-generated)
+├── 📂 database/
+│   ├── 📂 migrations/           # Database migrations
+│   └── 📂 seeders/              # Database seeders
+├── 📄 vite.config.js            # Vite configuration
+├── 📄 tailwind.config.js        # Tailwind CSS configuration
+└── 📄 package.json              # Node.js dependencies
+```
+
+---
+
+## 🐛 **Troubleshooting**
+
+### **❌ Common Issues & Solutions:**
+
+#### **🔴 Assets Not Loading**
+```bash
+# Solution: Rebuild assets
+npm run build
+php artisan serve
+```
+
+#### **🔴 Database Connection Error**
+```bash
+# Check .env file database settings
+# Make sure database exists
+# Run: php artisan migrate
+```
+
+#### **🔴 Permission Errors**
+```bash
+# Fix storage permissions (Linux/Mac)
+chmod -R 775 storage bootstrap/cache
+
+# Clear caches
+php artisan optimize:clear
+```
+
+#### **🔴 NPM Install Errors**
+```bash
+# Clear npm cache
+npm cache clean --force
+
+# Delete node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+---
+
+## 📚 **Documentation Links**
+
+- 📖 **Laravel Documentation**: [https://laravel.com/docs](https://laravel.com/docs)
+- 🎨 **Tailwind CSS**: [https://tailwindcss.com/docs](https://tailwindcss.com/docs)
+- ⚡ **Vite**: [https://vitejs.dev/guide](https://vitejs.dev/guide)
+- 📋 **Feature Documentation**: `PENJELASAN_FITUR.md`
+- 🔄 **Update Summary**: `UPDATE_SUMMARY.md`
+
+---
+
+## 👥 **Contributing**
+
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open Pull Request
+
+---
+
+## 📄 **License**
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+## 🙏 **About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
