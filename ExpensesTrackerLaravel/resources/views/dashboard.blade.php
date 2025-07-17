@@ -70,7 +70,6 @@
             </div>
         @endif
 
-        <!-- Enhanced Stats Section with Month Selector -->
         <div class="dashboard-stats-section">
             <!-- Month Selector -->
             <div class="dashboard-month-selector mb-6">
@@ -450,26 +449,30 @@
     </div>
 
     <script>
-        // Data untuk JavaScript
+        /* AJAX untuk operasi CRUD tanpa reload halaman
+         * Menggunakan fetch API dengan Laravel backend  */
+
+        // ========== DATA PREPARATION ==========
+        // Ambil data expenses dari Laravel dan convert ke JavaScript
         let expensesData = @json($expenses ?? collect());
         
-        // CSRF Token untuk AJAX requests
+        // Ambil CSRF token untuk keamanan AJAX requests
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
                          || document.querySelector('input[name="_token"]')?.value;
+      
         
-        // Function to show loading spinner
+     
+
         function showLoading() {
             document.getElementById('loadingSpinner').classList.remove('hidden');
             document.getElementById('loadingSpinner').classList.add('flex');
         }
         
-        // Function to hide loading spinner
         function hideLoading() {
             document.getElementById('loadingSpinner').classList.add('hidden');
             document.getElementById('loadingSpinner').classList.remove('flex');
         }
         
-        // Function to show toast notification
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = `dashboard-alert dashboard-alert-${type} dashboard-fade-in`;
@@ -486,8 +489,6 @@
             `;
             
             document.body.appendChild(toast);
-            
-            // Auto remove after 5 seconds
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateX(-50%) translateY(-100px)';
@@ -495,49 +496,50 @@
             }, 5000);
         }
         
-        // Function to update monthly stats
+        // Update total bulanan berdasarkan filter bulan/tahun
+        // Menggunakan data lokal expensesData (sudah di-fetch saat page load)
         function updateMonthlyStats() {
             const selectedMonth = parseInt(document.getElementById('monthSelector').value);
             const selectedYear = parseInt(document.getElementById('yearSelector').value);
             
-            // Filter expenses for selected month/year
+            // Filter expenses untuk bulan/tahun yang dipilih
             const filteredExpenses = expensesData.filter(expense => {
                 const expenseDate = new Date(expense.date);
                 return expenseDate.getMonth() + 1 === selectedMonth && expenseDate.getFullYear() === selectedYear;
             });
             
-            // Calculate totals
+            // Hitung total pengeluaran dan jumlah transaksi
             const monthlyTotal = filteredExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
             const monthlyCount = filteredExpenses.length;
             
-            // Update UI with formatted currency
+            // Update UI dengan format Rupiah Indonesia
             document.getElementById('monthlyExpensesValue').textContent = 'Rp ' + monthlyTotal.toLocaleString('id-ID');
             document.getElementById('monthlyTransactionsValue').textContent = monthlyCount;
             
-            // Update month text
+            // Update teks bulan yang dipilih
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
             document.getElementById('selectedMonthText').textContent = months[selectedMonth - 1] + ' ' + selectedYear;
         }
         
-        // Function to update all stats cards
+        // Update (total, transaksi, rata-rata)
+        // Plus update statistik bulanan juga
         function updateAllStats() {
-            // Calculate total expenses and count
+            // Hitung total semua pengeluaran dan rata-rata
             const totalExpenses = expensesData.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
             const totalCount = expensesData.length;
             const average = totalCount > 0 ? totalExpenses / totalCount : 0;
             
-            // Update total stats
+            // Update statistik utama dengan format Rupiah
             document.querySelector('.dashboard-stats-card-money-enhanced .dashboard-stats-value').textContent = 
                 'Rp ' + totalExpenses.toLocaleString('id-ID');
             document.querySelector('.dashboard-stats-card-transaction-enhanced .dashboard-stats-value').textContent = totalCount;
             document.querySelector('.dashboard-stats-card-enhanced:nth-child(3) .dashboard-stats-value').textContent = 
                 'Rp ' + average.toLocaleString('id-ID');
             
-            // Update monthly stats
+            // Update juga statistik bulanan
             updateMonthlyStats();
         }
         
-        // Function to get category badge HTML
         function getCategoryBadge(category) {
             const categories = {
                 'makanan': { class: 'dashboard-category-food', emoji: '🍽️', name: 'Makanan' },
@@ -552,22 +554,23 @@
             return `<span class="dashboard-category-badge ${cat.class}">${cat.emoji} ${cat.name}</span>`;
         }
         
-        // Function to format date
+
+        // Format tanggal ke format Indonesia dan nama hari
         function formatDate(dateString) {
             const date = new Date(dateString);
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             return {
-                short: date.toLocaleDateString('id-ID'),
-                day: days[date.getDay()]
+                short: date.toLocaleDateString('id-ID'), // Format: DD/MM/YYYY
+                day: days[date.getDay()] // Nama hari dalam bahasa Inggris
             };
         }
         
-        // Function to update table
+        // Generate dan update tabel dengan data terbaru
         function updateTable() {
             const container = document.querySelector('.dashboard-table-container');
             
+            // Jika tidak ada data, tampilkan empty state
             if (expensesData.length === 0) {
-                // Show empty state
                 container.innerHTML = `
                     <div class="dashboard-empty-state">
                         <svg class="dashboard-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -580,7 +583,7 @@
                 return;
             }
             
-            // Ensure table exists
+            // Pastikan struktur tabel ada (create jika belum)
             if (!container.querySelector('.dashboard-table')) {
                 container.innerHTML = `
                     <div class="dashboard-table-scroll">
@@ -600,7 +603,7 @@
                 `;
             }
             
-            // Update tbody
+            // Generate baris tabel untuk setiap expense
             const tbody = container.querySelector('tbody');
             tbody.innerHTML = expensesData.map(expense => {
                 const dateInfo = formatDate(expense.date);
@@ -639,94 +642,102 @@
                         </td>
                     </tr>
                 `;
-            }).join('');
+            }).join(''); // Gabungkan semua baris jadi string HTML
         }
         
-        // Function to add expense via AJAX
+
+        // Add expenses
         async function addExpenseAjax(formData) {
             try {
                 showLoading();
                 
+                // POST request ke Laravel endpoint
                 const response = await fetch('/expenses', {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': csrfToken,
+                        'X-CSRF-TOKEN': csrfToken, // Laravel CSRF protection
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(formData) // Convert object ke JSON
                 });
                 
                 const result = await response.json();
                 
                 if (response.ok) {
-                    // Add new expense to local data
+                    // Tambahkan expense baru ke data lokal (di awal array)
                     expensesData.unshift(result.expense);
                     
-                    // Update UI
+                    // Update tampilan tabel dan statistik
                     updateTable();
                     updateAllStats();
                     
-                    // Reset form
+                    // Reset form input ke kondisi awal
                     document.querySelector('.dashboard-form').reset();
                     document.querySelector('input[name="date"]').value = new Date().toISOString().split('T')[0];
                     
                     showToast('Pengeluaran berhasil ditambahkan!', 'success');
                 } else {
+                    // Handle error response dari server
                     throw new Error(result.message || 'Terjadi kesalahan');
                 }
             } catch (error) {
                 console.error('Error adding expense:', error);
                 showToast('Gagal menambahkan pengeluaran: ' + error.message, 'error');
             } finally {
-                hideLoading();
+                hideLoading(); // Sembunyikan loading spinner
             }
         }
         
-        // Function to edit expense
+        //EDIT
         async function editExpense(id) {
             const expense = expensesData.find(exp => exp.id === id);
             if (!expense) return;
             
-            // Populate modal
+            // Isi form modal dengan data expense saat ini
             document.getElementById('editExpenseId').value = expense.id;
-            document.getElementById('editDate').value = expense.date.split('T')[0];
+            document.getElementById('editDate').value = expense.date.split('T')[0]; // Format YYYY-MM-DD
             document.getElementById('editCategory').value = expense.category;
             document.getElementById('editAmount').value = expense.amount;
             document.getElementById('editDescription').value = expense.description || '';
             
-            // Show modal
+            // Tampilkan modal dengan animasi
             const modal = document.getElementById('editModal');
             const modalContent = document.getElementById('editModalContent');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             
-            // Animate modal
+            // Animasi
             setTimeout(() => {
                 modalContent.classList.remove('scale-95');
                 modalContent.classList.add('scale-100');
             }, 10);
         }
-        
-        // Function to close edit modal
+
+        // Tutup edit dengan animasi
         function closeEditModal() {
             const modal = document.getElementById('editModal');
             const modalContent = document.getElementById('editModalContent');
             
+            // Animasi keluar
             modalContent.classList.add('scale-95');
             modalContent.classList.remove('scale-100');
             
+            // Sembunyikan setelah animasi selesai
             setTimeout(() => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }, 200);
         }
         
-        // Function to update expense via AJAX
+        // Update expense
+        // Kirim data expense yang sudah diedit ke server
+        // Update data lokal dan UI setelah sukses
         async function updateExpenseAjax(id, formData) {
             try {
                 showLoading();
                 
+                // PUT request ke Laravel endpoint
                 const response = await fetch(`/expenses/${id}`, {
                     method: 'PUT',
                     headers: {
@@ -734,25 +745,26 @@
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(formData) // Convert object ke JSON
                 });
                 
                 const result = await response.json();
                 
                 if (response.ok) {
-                    // Update local data
+                    // Update data lokal dengan expense yang sudah diupdate
                     const index = expensesData.findIndex(exp => exp.id === id);
                     if (index !== -1) {
                         expensesData[index] = result.expense;
                     }
                     
-                    // Update UI
+             
                     updateTable();
                     updateAllStats();
                     closeEditModal();
                     
                     showToast('Pengeluaran berhasil diupdate!', 'success');
                 } else {
+              
                     throw new Error(result.message || 'Terjadi kesalahan');
                 }
             } catch (error) {
@@ -763,8 +775,11 @@
             }
         }
         
-        // Function to delete expense
+        // Delete expense
+        // Hapus expense dengan konfirmasi user
+        // Update UI setelah berhasil dihapus dari server
         async function deleteExpense(id) {
+
             if (!confirm('Apakah Anda yakin ingin menghapus pengeluaran ini?')) {
                 return;
             }
@@ -772,6 +787,7 @@
             try {
                 showLoading();
                 
+                // DELETE request ke Larave
                 const response = await fetch(`/expenses/${id}`, {
                     method: 'DELETE',
                     headers: {
@@ -783,30 +799,33 @@
                 const result = await response.json();
                 
                 if (response.ok) {
-                    // Remove from local data
+                    // Hapus dari data lokal (filter out yang dihapus)
                     expensesData = expensesData.filter(exp => exp.id !== id);
                     
-                    // Update UI
                     updateTable();
                     updateAllStats();
                     
                     showToast('Pengeluaran berhasil dihapus!', 'success');
                 } else {
+            
                     throw new Error(result.message || 'Terjadi kesalahan');
                 }
             } catch (error) {
                 console.error('Error deleting expense:', error);
                 showToast('Gagal menghapus pengeluaran: ' + error.message, 'error');
             } finally {
-                hideLoading();
+                hideLoading(); 
             }
         }
         
-        // Event listeners
+        // EVENT LISTENERS
+        // Setup semua event listener untuk interaksi user
+        
+        // Filter bulan/tahun - update stats saat berubah
         document.getElementById('monthSelector').addEventListener('change', updateMonthlyStats);
         document.getElementById('yearSelector').addEventListener('change', updateMonthlyStats);
         
-        // Reset to current month
+        // Reset ke bulan saat ini
         document.getElementById('resetToCurrentMonth').addEventListener('click', function() {
             const now = new Date();
             document.getElementById('monthSelector').value = now.getMonth() + 1;
@@ -814,24 +833,29 @@
             updateMonthlyStats();
         });
         
-        // Add expense form submission
+        // FORM SUBMISSION HANDLERS 
+        
+        // Form tambah expense baru - prevent default submit, gunakan AJAX
         document.querySelector('.dashboard-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+            e.preventDefault(); // Cegah reload halaman
             
+            // Kumpulkan data form ke object
             const formData = {
                 date: this.date.value,
                 category: this.category.value,
-                amount: parseFloat(this.amount.value),
+                amount: parseFloat(this.amount.value), // Convert ke number
                 description: this.description.value
             };
             
+            // Kirim via AJAX
             addExpenseAjax(formData);
         });
         
-        // Edit expense form submission
+        // Form edit expense - prevent default submit, gunakan AJAX
         document.getElementById('editExpenseForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+            e.preventDefault(); // Cegah reload halaman
             
+            // Ambil ID expense dan data form
             const id = parseInt(document.getElementById('editExpenseId').value);
             const formData = {
                 date: document.getElementById('editDate').value,
@@ -840,21 +864,26 @@
                 description: document.getElementById('editDescription').value
             };
             
+            // Update via AJAX
             updateExpenseAjax(id, formData);
         });
         
-        // Close modal when clicking outside
+        //MODAL INTERACTION
+        
+        // Tutup modal saat klik di luar area modal
         document.getElementById('editModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeEditModal();
             }
         });
         
-        // Auto-hide existing alerts
+
+        
+        // Auto-hide alert Laravel yang ada (bukan toast kita)
         setTimeout(() => {
             const alerts = document.querySelectorAll('.dashboard-alert');
             alerts.forEach(alert => {
-                if (!alert.id) { // Don't auto-hide our custom toasts
+                if (!alert.id) { // Jangan hide toast custom kita
                     alert.style.opacity = '0';
                     alert.style.transform = 'translateX(-50%) translateY(-100px)';
                     setTimeout(() => alert.remove(), 300);
@@ -862,18 +891,17 @@
             });
         }, 5000);
         
-        // Card animations on page load
+        // Animasi kartu saat page load 
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.dashboard-card, .dashboard-stats-card-enhanced');
             cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.animationDelay = `${index * 0.1}s`; // Delay bertahap
             });
             
-            // Initialize monthly stats
+       
             updateMonthlyStats();
         });
         
-        // Make functions global for onclick handlers
         window.editExpense = editExpense;
         window.deleteExpense = deleteExpense;
         window.closeEditModal = closeEditModal;
