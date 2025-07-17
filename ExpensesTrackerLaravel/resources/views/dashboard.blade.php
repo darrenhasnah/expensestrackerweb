@@ -70,7 +70,7 @@
             </div>
         @endif
 
-        <!-- Enhanced Stats Section - Option A -->
+        <!-- Enhanced Stats Section with Month Selector -->
         <div class="dashboard-stats-section">
             <!-- Month Selector -->
             <div class="dashboard-month-selector mb-6">
@@ -187,7 +187,7 @@
                 </div>
 
                 <!-- Monthly Transactions Count -->
-                <div class="dashboard-stats-card-enhanced dashboard-bounce-in" style="animation-delay: 0.4s;">
+                <div class="dashboard-stats-card-enhanced dashboard-stats-card-monthly dashboard-bounce-in" style="animation-delay: 0.4s;">
                     <div class="dashboard-stats-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -196,7 +196,7 @@
                     <div class="dashboard-stats-value" id="monthlyTransactionsValue">{{ $monthlyTransactions }}</div>
                     <div class="dashboard-stats-label">Transaksi Bulan Terpilih</div>
                     <div class="dashboard-stats-trend">
-                        <span class="text-orange-600">📝</span>
+                        <span class="text-purple-600">📝</span>
                         <span class="text-gray-500">Total entri</span>
                     </div>
                 </div>
@@ -275,48 +275,93 @@
                     
                     @if(isset($expenses) && $expenses->count() > 0)
                         <div class="dashboard-table-container">
-                            <table class="dashboard-table">
-                                <thead class="dashboard-table-header">
-                                    <tr>
-                                        <th class="dashboard-table-th">Tanggal</th>
-                                        <th class="dashboard-table-th">Kategori</th>
-                                        <th class="dashboard-table-th">Jumlah</th>
-                                        <th class="dashboard-table-th">Deskripsi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($expenses as $expense)
-                                        <tr class="dashboard-table-row">
-                                            <td class="dashboard-table-td">
-                                                <div class="font-semibold">
-                                                    {{ $expense->date->format('d/m/Y') }}
-                                                </div>
-                                                <div class="text-xs text-slate-500">
-                                                    {{ $expense->date->format('l') }}
-                                                </div>
-                                            </td>
-                                            <td class="dashboard-table-td">
-                                                <span class="category-{{ $expense->category }}">
-                                                    {{ ucfirst($expense->category) }}
-                                                </span>
-                                            </td>
-                                            <td class="dashboard-table-td">
-                                                <div class="font-bold text-slate-800">
-                                                    Rp {{ number_format($expense->amount, 0, ',', '.') }}
-                                                </div>
-                                            </td>
-                                            <td class="dashboard-table-td">
-                                                <div class="max-w-xs">
-                                                    {{ $expense->description ?: '-' }}
-                                                </div>
-                                            </td>
+                            <div class="dashboard-table-scroll">
+                                <table class="dashboard-table">
+                                    <thead class="dashboard-table-header">
+                                        <tr>
+                                            <th class="dashboard-table-cell-date">Tanggal</th>
+                                            <th class="dashboard-table-cell-category">Kategori</th>
+                                            <th class="dashboard-table-cell-amount">Jumlah</th>
+                                            <th class="dashboard-table-cell-description">Deskripsi</th>
+                                            <th class="dashboard-table-cell-actions">Aksi</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($expenses as $expense)
+                                            <tr class="dashboard-table-row">
+                                                <td class="dashboard-table-cell-date">
+                                                    <div class="font-semibold text-gray-800">
+                                                        {{ $expense->date->format('d/m/Y') }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500">
+                                                        {{ $expense->date->format('l') }}
+                                                    </div>
+                                                </td>
+                                                <td class="dashboard-table-cell-category">
+                                                    @switch($expense->category)
+                                                        @case('makanan')
+                                                            <span class="dashboard-category-badge dashboard-category-food">
+                                                                🍽️ Makanan
+                                                            </span>
+                                                            @break
+                                                        @case('transportasi')
+                                                            <span class="dashboard-category-badge dashboard-category-transport">
+                                                                🚗 Transportasi
+                                                            </span>
+                                                            @break
+                                                        @case('belanja')
+                                                            <span class="dashboard-category-badge dashboard-category-shopping">
+                                                                🛍️ Belanja
+                                                            </span>
+                                                            @break
+                                                        @case('hiburan')
+                                                            <span class="dashboard-category-badge dashboard-category-entertainment">
+                                                                🎬 Hiburan
+                                                            </span>
+                                                            @break
+                                                        @case('kesehatan')
+                                                            <span class="dashboard-category-badge dashboard-category-health">
+                                                                🏥 Kesehatan
+                                                            </span>
+                                                            @break
+                                                        @default
+                                                            <span class="dashboard-category-badge dashboard-category-other">
+                                                                📝 {{ ucfirst($expense->category) }}
+                                                            </span>
+                                                    @endswitch
+                                                </td>
+                                                <td class="dashboard-table-cell-amount">
+                                                    <div class="font-bold text-gray-800">
+                                                        Rp {{ number_format($expense->amount, 0, ',', '.') }}
+                                                    </div>
+                                                </td>
+                                                <td class="dashboard-table-cell-description">
+                                                    <div class="text-gray-700" title="{{ $expense->description ?: 'Tidak ada deskripsi' }}">
+                                                        {{ $expense->description ?: '-' }}
+                                                    </div>
+                                                </td>
+                                                <td class="dashboard-table-cell-actions">
+                                                    <div class="flex space-x-2">
+                                                        <button class="dashboard-btn dashboard-btn-small dashboard-btn-secondary" 
+                                                                onclick="editExpense({{ $expense->id }})" 
+                                                                title="Edit">
+                                                            ✏️
+                                                        </button>
+                                                        <button class="dashboard-btn dashboard-btn-small dashboard-btn-danger" 
+                                                                onclick="deleteExpense({{ $expense->id }})" 
+                                                                title="Hapus">
+                                                            🗑️
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     @else
-                        <div class="dashboard-empty">
+                        <div class="dashboard-empty-state">
                             <svg class="dashboard-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                             </svg>
@@ -348,7 +393,7 @@
             const monthlyTotal = filteredExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
             const monthlyCount = filteredExpenses.length;
             
-            // Update UI
+            // Update UI with formatted currency
             document.getElementById('monthlyExpensesValue').textContent = 'Rp ' + monthlyTotal.toLocaleString('id-ID');
             document.getElementById('monthlyTransactionsValue').textContent = monthlyCount;
             
@@ -369,22 +414,38 @@
             updateMonthlyStats();
         });
 
+        // Functions for edit and delete actions
+        function editExpense(id) {
+            // TODO: Implement edit functionality
+            alert('Edit functionality will be implemented soon!');
+        }
+
+        function deleteExpense(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus pengeluaran ini?')) {
+                // TODO: Implement delete functionality
+                alert('Delete functionality will be implemented soon!');
+            }
+        }
+
         // Auto-hide alerts
         setTimeout(() => {
             const alerts = document.querySelectorAll('.dashboard-alert');
             alerts.forEach(alert => {
                 alert.style.opacity = '0';
-                alert.style.transform = 'translateY(-20px)';
+                alert.style.transform = 'translateX(-50%) translateY(-100px)';
                 setTimeout(() => alert.remove(), 300);
             });
         }, 5000);
         
-        // Card animations
+        // Card animations on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.dashboard-card');
+            const cards = document.querySelectorAll('.dashboard-card, .dashboard-stats-card-enhanced');
             cards.forEach((card, index) => {
                 card.style.animationDelay = `${index * 0.1}s`;
             });
+            
+            // Initialize monthly stats
+            updateMonthlyStats();
         });
     </script>
 </body>

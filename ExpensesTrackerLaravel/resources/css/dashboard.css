@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 @layer components {
-  /* Dashboard Container - Light Theme for Better Visibility */
+  /* Dashboard Container */
   .dashboard-container {
     @apply min-h-screen relative bg-gray-50;
     font-family: 'Inter', sans-serif;
@@ -14,7 +14,6 @@
     animation: lightGradientRotate 20s ease infinite;
   }
 
-  /* Subtle Pattern Overlay */
   .dashboard-container::before {
     content: '';
     position: absolute;
@@ -29,7 +28,7 @@
     pointer-events: none;
   }
 
-  /* Header Section - Clean Light Design */
+  /* Header Section*/
   .dashboard-header {
     @apply relative bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-xl;
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
@@ -78,7 +77,7 @@
     @apply font-semibold text-blue-600;
   }
 
-  /* Logout Button - Modern */
+  /* Logout Button */
   .dashboard-logout-btn {
     @apply px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5;
   }
@@ -92,7 +91,7 @@
     @apply grid grid-cols-1 lg:grid-cols-3 gap-6;
   }
 
-  /* Cards - Clean White Design with Better Spacing */
+  /* Cards */
   .dashboard-card {
     @apply bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200 p-8 relative overflow-hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -127,7 +126,7 @@
     @apply w-7 h-7 text-blue-500;
   }
 
-  /* Stats Cards - Enhanced Visibility */
+  /* Stats Cards */
   .dashboard-stats-card {
     @apply bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 p-6 transition-all duration-300 hover:border-blue-300;
     backdrop-filter: blur(10px);
@@ -147,7 +146,6 @@
     @apply text-base font-semibold text-gray-600;
   }
 
-  /* Enhanced Stats Cards for Better Money Display */
   .dashboard-stats-card-money {
     @apply bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200;
   }
@@ -156,6 +154,10 @@
     @apply text-blue-700;
     font-size: 2.5rem;
     line-height: 1.2;
+  }
+
+  .dashboard-stats-card-money .dashboard-stats-icon {
+    @apply w-8 h-8 text-blue-500;
   }
 
   .dashboard-stats-card-transaction {
@@ -168,13 +170,29 @@
     line-height: 1.2;
   }
 
-  /* Top Stats Section - Enhanced Design */
+  .dashboard-stats-card-transaction .dashboard-stats-icon {
+    @apply w-8 h-8 text-emerald-500;
+  }
+
+  /* Top Stats Section */
   .dashboard-stats-section {
     @apply mb-8;
   }
 
   .dashboard-stats-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8;
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8;
+  }
+
+  @media (max-width: 1024px) {
+    .dashboard-stats-grid {
+      @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-stats-grid {
+      @apply grid-cols-1;
+    }
   }
 
   .dashboard-stats-card-enhanced {
@@ -194,8 +212,9 @@
   }
 
   .dashboard-stats-card-enhanced:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px) scale(1.02);
     @apply shadow-2xl;
+    box-shadow: 0 25px 50px rgba(59, 130, 246, 0.25);
   }
 
   .dashboard-stats-card-enhanced .dashboard-stats-icon {
@@ -221,7 +240,6 @@
     @apply text-xs font-medium mt-2 flex items-center space-x-1;
   }
 
-  /* Money Specific Stats Card */
   .dashboard-stats-card-money-enhanced {
     @apply bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200;
   }
@@ -238,8 +256,6 @@
   .dashboard-stats-card-money-enhanced .dashboard-stats-icon svg {
     @apply text-blue-700;
   }
-
-  /* Transaction Specific Stats Card */
   .dashboard-stats-card-transaction-enhanced {
     @apply bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200;
   }
@@ -256,8 +272,6 @@
   .dashboard-stats-card-transaction-enhanced .dashboard-stats-icon svg {
     @apply text-emerald-700;
   }
-
-  /* Quick Stats Mini Cards */
   .dashboard-mini-stats {
     @apply grid grid-cols-2 gap-4 lg:flex lg:space-x-4 lg:justify-end mb-6;
   }
@@ -283,7 +297,6 @@
     @apply text-emerald-600;
   }
 
-  /* Form Styling - Better Visibility */
   .dashboard-form {
     @apply space-y-6;
   }
@@ -319,7 +332,6 @@
     @apply border-gray-400 shadow-md;
   }
 
-  /* Buttons - Modern Design */
   .dashboard-btn {
     @apply py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0;
   }
@@ -340,7 +352,7 @@
   .dashboard-btn-secondary {
     @apply bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600;
   }
-
+  
   .dashboard-btn-small {
     @apply py-2 px-4 text-sm rounded-lg;
   }
@@ -348,8 +360,6 @@
   .dashboard-btn-large {
     @apply py-4 px-8 text-lg rounded-xl;
   }
-
-  /* Table Styling - Less Curved, More Professional */
   .dashboard-table-container {
     @apply bg-white/95 backdrop-blur-xl rounded-lg shadow-xl border border-gray-200 overflow-hidden relative;
     backdrop-filter: blur(10px);
@@ -391,7 +401,6 @@
     max-width: 0;
   }
 
-  /* Specific cell widths for better table layout */
   .dashboard-table-cell-date {
     @apply px-6 py-5 text-sm text-gray-700;
     white-space: nowrap;
@@ -427,7 +436,6 @@
     width: 120px;
   }
 
-  /* Empty State - Light Theme */
   .dashboard-empty-state {
     @apply text-center py-16 px-8;
   }
@@ -445,9 +453,12 @@
     @apply text-gray-500 text-lg;
   }
 
-  /* Category Badges - Light Theme with Better Contrast */
   .dashboard-category-badge {
-    @apply inline-flex items-center px-3 py-2 rounded-full text-sm font-semibold;
+    @apply inline-flex items-center px-3 py-2 rounded-full text-sm font-semibold transition-all duration-200;
+  }
+
+  .dashboard-category-badge:hover {
+    @apply scale-105;
   }
 
   .dashboard-category-food {
@@ -474,7 +485,6 @@
     @apply bg-gray-100 text-gray-800 border border-gray-200;
   }
 
-  /* Textarea - Light Theme with Better Visibility */
   .dashboard-textarea {
     @apply w-full px-5 py-4 bg-white border-2 border-gray-300 rounded-xl text-gray-800 placeholder-gray-500 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 resize-none shadow-sm;
     min-height: 120px;
@@ -486,11 +496,10 @@
     @apply border-gray-400 shadow-md;
   }
 
-  /* Alert Messages - Light Theme */
   .dashboard-alert {
     @apply p-5 rounded-xl mb-6 border shadow-2xl backdrop-blur-sm;
     position: fixed;
-    top: 20px;
+    top: 80px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
@@ -510,7 +519,6 @@
     backdrop-filter: blur(12px);
   }
 
-  /* Enhanced table styling classes */
   .dashboard-table-th {
     @apply px-6 py-5 text-left text-sm font-bold text-gray-700 tracking-wider;
     white-space: nowrap;
@@ -521,9 +529,7 @@
     white-space: nowrap;
   }
 
-  /* Additional Utility Classes for Better Design */
   
-  /* Money Display */
   .dashboard-money-display {
     @apply text-2xl font-bold text-green-600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -534,16 +540,19 @@
     text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
   }
 
-  /* Enhanced Button Variants */
   .dashboard-btn-small {
-    @apply py-2 px-4 text-sm rounded-lg;
+    @apply py-1.5 px-3 text-xs rounded-md;
+    transition: all 0.2s ease;
+  }
+
+  .dashboard-btn-small:hover {
+    @apply scale-110;
   }
 
   .dashboard-btn-large {
     @apply py-4 px-8 text-lg rounded-xl;
   }
 
-  /* Form Enhancements */
   .dashboard-form-row {
     @apply grid grid-cols-1 md:grid-cols-2 gap-6;
   }
@@ -552,7 +561,6 @@
     @apply col-span-full;
   }
 
-  /* Card Variants */
   .dashboard-card-compact {
     @apply p-4;
   }
@@ -560,8 +568,6 @@
   .dashboard-card-large {
     @apply p-10;
   }
-
-  /* Text Utilities */
   .dashboard-text-muted {
     @apply text-gray-500;
   }
@@ -577,13 +583,9 @@
   .dashboard-text-danger {
     @apply text-red-600 font-semibold;
   }
-
-  /* Loading States */
   .dashboard-loading {
     @apply animate-pulse bg-gray-200 rounded;
   }
-
-  /* Badge Variants */
   .dashboard-badge {
     @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
   }
@@ -604,15 +606,15 @@
     @apply bg-blue-100 text-blue-800;
   }
 
-  /* Scrollable Table Container for Mobile */
   .dashboard-table-scroll {
     @apply overflow-x-auto;
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 #f1f5f9;
+    max-width: 100%;
   }
 
   .dashboard-table-scroll::-webkit-scrollbar {
-    height: 8px;
+    height: 10px;
   }
 
   .dashboard-table-scroll::-webkit-scrollbar-track {
@@ -621,30 +623,27 @@
 
   .dashboard-table-scroll::-webkit-scrollbar-thumb {
     @apply bg-gray-300 rounded-full;
+    transition: background-color 0.2s;
   }
 
   .dashboard-table-scroll::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-400;
   }
 
-  /* Month Selector Styling */
+
   .dashboard-month-selector {
-    @apply relative z-10;
+    @apply relative z-10 transition-all duration-300;
   }
 
-  .dashboard-month-selector select {
-    @apply transition-all duration-200 hover:border-gray-400;
+  .dashboard-month-selector:hover {
+    transform: translateY(-2px);
   }
 
-  .dashboard-month-selector button {
-    @apply transition-all duration-200;
+  .dashboard-month-selector select:focus,
+  .dashboard-month-selector button:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-opacity-50;
   }
 
-  .dashboard-month-selector button:hover {
-    @apply scale-105;
-  }
-
-  /* Enhanced Stats Card for Monthly Data */
   .dashboard-stats-card-monthly {
     @apply bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200;
   }
@@ -662,7 +661,6 @@
     @apply text-purple-700;
   }
 
-  /* Legacy Stats Support - For backwards compatibility */
   .dashboard-stats {
     @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8;
   }
@@ -699,7 +697,6 @@
 
 }
 
-/* Keyframes and Animations */
 @keyframes lightGradientRotate {
   0% {
     background-position: 0% 50%;
@@ -797,8 +794,6 @@
     transform: scale(1);
   }
 }
-
-/* Animation Classes */
 @layer utilities {
   .dashboard-fade-in {
     animation: fadeInUp 0.6s ease-out;
