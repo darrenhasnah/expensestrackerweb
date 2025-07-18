@@ -245,9 +245,8 @@
   }
 
   .dashboard-stats-card-money-enhanced .dashboard-stats-value {
-    @apply text-blue-700 text-2xl md:text-3xl font-bold mb-2;
-    line-height: 1.1;
-    word-break: break-all;
+    @apply text-blue-700;
+    font-size: 2.8rem;
   }
 
   .dashboard-stats-card-money-enhanced .dashboard-stats-icon {
@@ -262,9 +261,8 @@
   }
 
   .dashboard-stats-card-transaction-enhanced .dashboard-stats-value {
-    @apply text-emerald-700 text-2xl md:text-3xl font-bold mb-2;
-    line-height: 1.1;
-    word-break: break-all;
+    @apply text-emerald-700;
+    font-size: 2.8rem;
   }
 
   .dashboard-stats-card-transaction-enhanced .dashboard-stats-icon {

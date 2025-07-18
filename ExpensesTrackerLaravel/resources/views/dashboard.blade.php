@@ -107,7 +107,7 @@
             <div class="dashboard-stats-grid">
                 
                 <!-- Total Pengeluaran Card -->
-                <div class="dashboard-stats-card-enhanced dashboard-bounce-in">
+                <div class="dashboard-stats-card-enhanced dashboard-stats-card-money-enhanced dashboard-bounce-in">
                     <div class="dashboard-stats-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
@@ -583,7 +583,7 @@
             const average = totalCount > 0 ? totalExpenses / totalCount : 0;
             
             // Update statistik utama dengan format Rupiah
-            document.querySelector('.dashboard-stats-card-enhanced:nth-child(1) .dashboard-stats-value').textContent = 
+            document.querySelector('.dashboard-stats-card-money-enhanced .dashboard-stats-value').textContent = 
                 'Rp ' + totalExpenses.toLocaleString('id-ID');
             document.querySelector('.dashboard-stats-card-transaction-enhanced .dashboard-stats-value').textContent = totalCount;
             document.querySelector('.dashboard-stats-card-enhanced:nth-child(3) .dashboard-stats-value').textContent = 
@@ -700,7 +700,7 @@
         
 
         // ========== PAGINATION FUNCTIONS ==========
-        // Load data dengan pagination
+        // Load data dengan pagination via AJAX tanpa refresh halaman
         async function loadPage(page = 1) {
             try {
                 showLoading();
@@ -799,11 +799,11 @@
                 const response = await fetch('/expenses', {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': csrfToken,
+                        'X-CSRF-TOKEN': csrfToken, // Laravel CSRF protection
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(formData) // Convert object ke JSON
                 });
                 
                 const result = await response.json();
