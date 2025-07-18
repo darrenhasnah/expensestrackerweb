@@ -189,7 +189,7 @@
                 <div class="dashboard-stats-card-enhanced dashboard-stats-card-monthly dashboard-bounce-in" style="animation-delay: 0.4s;">
                     <div class="dashboard-stats-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                     </div>
                     <div class="dashboard-stats-value" id="monthlyTransactionsValue">{{ $monthlyTransactions }}</div>
@@ -358,11 +358,46 @@
                                     </tbody>
                                 </table>
                             </div>
+                            
+                            <!-- Pagination Controls -->
+                            @if(isset($expenses) && $expenses->hasPages())
+                                <div class="dashboard-pagination">
+                                    <div class="flex items-center justify-between py-4 px-6 bg-gray-50 border-t border-gray-200">
+                                        <div class="text-sm text-gray-600">
+                                            Menampilkan {{ $expenses->firstItem() ?? 0 }} - {{ $expenses->lastItem() ?? 0 }} 
+                                            dari {{ $expenses->total() }} total
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button id="prevPageBtn" 
+                                                    class="dashboard-btn dashboard-btn-small dashboard-btn-secondary {{ !$expenses->previousPageUrl() ? 'opacity-50 cursor-not-allowed' : '' }}" 
+                                                    {{ !$expenses->previousPageUrl() ? 'disabled' : '' }}>
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                                </svg>
+                                                Previous
+                                            </button>
+                                            
+                                            <span class="text-sm font-medium text-gray-700 px-3">
+                                                Halaman {{ $expenses->currentPage() }} dari {{ $expenses->lastPage() }}
+                                            </span>
+                                            
+                                            <button id="nextPageBtn" 
+                                                    class="dashboard-btn dashboard-btn-small dashboard-btn-secondary {{ !$expenses->nextPageUrl() ? 'opacity-50 cursor-not-allowed' : '' }}" 
+                                                    {{ !$expenses->nextPageUrl() ? 'disabled' : '' }}>
+                                                Next
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     @else
                         <div class="dashboard-empty-state">
                             <svg class="dashboard-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                             </svg>
                             <h3 class="dashboard-empty-title">Belum Ada Pengeluaran</h3>
                             <p class="dashboard-empty-text">Mulai dengan menambahkan pengeluaran pertama Anda menggunakan form di sebelah kiri.</p>
@@ -454,7 +489,25 @@
 
         // ========== DATA PREPARATION ==========
         // Ambil data expenses dari Laravel dan convert ke JavaScript
-        let expensesData = @json($expenses ?? collect());
+        let expensesData = @json(isset($expenses) ? $expenses->items() : []);
+        
+        @php
+            $paginationInfo = null;
+            if (isset($expenses) && $expenses->hasPages()) {
+                $paginationInfo = [
+                    'current_page' => $expenses->currentPage(),
+                    'last_page' => $expenses->lastPage(), 
+                    'per_page' => $expenses->perPage(),
+                    'total' => $expenses->total(),
+                    'from' => $expenses->firstItem(),
+                    'to' => $expenses->lastItem(),
+                    'has_more' => $expenses->hasMorePages(),
+                    'has_previous' => $expenses->currentPage() > 1
+                ];
+            }
+        @endphp
+        
+        let paginationData = @json($paginationInfo);
         
         // Ambil CSRF token untuk keamanan AJAX requests
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
@@ -646,6 +699,97 @@
         }
         
 
+        // ========== PAGINATION FUNCTIONS ==========
+        // Load data dengan pagination via AJAX tanpa refresh halaman
+        async function loadPage(page = 1) {
+            try {
+                showLoading();
+                
+                // Request data dengan page parameter
+                const response = await fetch(`{{ route('dashboard') }}?page=${page}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Update data lokal dengan data baru
+                    expensesData = result.expenses;
+                    paginationData = result.pagination;
+                    
+                    // Update tampilan tabel
+                    updateTable();
+                    updatePaginationControls();
+                } else {
+                    throw new Error('Gagal memuat data');
+                }
+            } catch (error) {
+                console.error('Error loading page:', error);
+                showToast('Gagal memuat halaman: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Update tampilan kontrol pagination (tombol next/prev)
+        function updatePaginationControls() {
+            if (!paginationData) return;
+            
+            const prevBtn = document.getElementById('prevPageBtn');
+            const nextBtn = document.getElementById('nextPageBtn');
+            const pageInfo = document.querySelector('.dashboard-pagination .text-sm.text-gray-600');
+            const pageNumber = document.querySelector('.dashboard-pagination .text-sm.font-medium');
+            
+            // Update tombol Previous
+            if (prevBtn) {
+                if (paginationData.has_previous) {
+                    prevBtn.disabled = false;
+                    prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    prevBtn.disabled = true;
+                    prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+            
+            // Update tombol Next
+            if (nextBtn) {
+                if (paginationData.has_more) {
+                    nextBtn.disabled = false;
+                    nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    nextBtn.disabled = true;
+                    nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+            
+            // Update info pagination
+            if (pageInfo) {
+                pageInfo.textContent = `Menampilkan ${paginationData.from || 0} - ${paginationData.to || 0} dari ${paginationData.total} total`;
+            }
+            
+            if (pageNumber) {
+                pageNumber.textContent = `Halaman ${paginationData.current_page} dari ${paginationData.last_page}`;
+            }
+        }
+        
+        // Handle click tombol Previous
+        function goToPreviousPage() {
+            if (paginationData && paginationData.has_previous) {
+                loadPage(paginationData.current_page - 1);
+            }
+        }
+        
+        // Handle click tombol Next  
+        function goToNextPage() {
+            if (paginationData && paginationData.has_more) {
+                loadPage(paginationData.current_page + 1);
+            }
+        }
+        
         // Add expenses
         async function addExpenseAjax(formData) {
             try {
@@ -665,11 +809,11 @@
                 const result = await response.json();
                 
                 if (response.ok) {
-                    // Tambahkan expense baru ke data lokal (di awal array)
-                    expensesData.unshift(result.expense);
+                    // Refresh current page untuk melihat data terbaru dengan pagination
+                    const currentPage = paginationData ? paginationData.current_page : 1;
+                    await loadPage(currentPage);
                     
-                    // Update tampilan tabel dan statistik
-                    updateTable();
+                    // Update statistik juga
                     updateAllStats();
                     
                     // Reset form input ke kondisi awal
@@ -799,10 +943,11 @@
                 const result = await response.json();
                 
                 if (response.ok) {
-                    // Hapus dari data lokal (filter out yang dihapus)
-                    expensesData = expensesData.filter(exp => exp.id !== id);
+                    // Refresh current page untuk melihat data terbaru
+                    const currentPage = paginationData ? paginationData.current_page : 1;
+                    await loadPage(currentPage);
                     
-                    updateTable();
+                    // Update statistik juga
                     updateAllStats();
                     
                     showToast('Pengeluaran berhasil dihapus!', 'success');
@@ -866,6 +1011,32 @@
             
             // Update via AJAX
             updateExpenseAjax(id, formData);
+        });
+        
+        // ========== PAGINATION EVENT LISTENERS ==========
+        
+        // Event listener untuk tombol Previous
+        document.addEventListener('DOMContentLoaded', function() {
+            const prevBtn = document.getElementById('prevPageBtn');
+            const nextBtn = document.getElementById('nextPageBtn');
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!this.disabled) {
+                        goToPreviousPage();
+                    }
+                });
+            }
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function(e) {
+                    e.preventDefault(); 
+                    if (!this.disabled) {
+                        goToNextPage();
+                    }
+                });
+            }
         });
         
         //MODAL INTERACTION

@@ -9,18 +9,40 @@ use Illuminate\Support\Facades\Auth;
 
 class ExpenseController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         if (!Auth::check()) {
             return redirect()->route('auth')->with('error', 'Silakan login terlebih dahulu.');
         }
         
+        $perPage = 10; // Limit 10 items per page
+        $page = $request->get('page', 1);
+        
+        // Get expenses with pagination
         $expenses = Auth::user()->expenses()
                         ->orderBy('date', 'desc')
                         ->orderBy('created_at', 'desc')
-                        ->get();
+                        ->paginate($perPage);
         
-        $totalExpenses = $expenses->sum('amount');
+        $totalExpenses = Auth::user()->expenses()->sum('amount');
+        
+        // For AJAX requests, return JSON with pagination data
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'expenses' => $expenses->items(),
+                'pagination' => [
+                    'current_page' => $expenses->currentPage(),
+                    'last_page' => $expenses->lastPage(),
+                    'per_page' => $expenses->perPage(),
+                    'total' => $expenses->total(),
+                    'from' => $expenses->firstItem(),
+                    'to' => $expenses->lastItem(),
+                    'has_more' => $expenses->hasMorePages(),
+                    'has_previous' => $expenses->currentPage() > 1
+                ],
+                'total' => $totalExpenses
+            ]);
+        }
         
         return view('dashboard', compact('expenses', 'totalExpenses'));
     }
