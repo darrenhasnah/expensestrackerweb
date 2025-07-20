@@ -15,10 +15,9 @@ class ExpenseController extends Controller
             return redirect()->route('auth')->with('error', 'Silakan login terlebih dahulu.');
         }
         
-        $perPage = 10; // Limit 10 items per page
+        $perPage = 10;
         $page = $request->get('page', 1);
-        
-        // Get expenses with pagination
+     
         $expenses = Auth::user()->expenses()
                         ->orderBy('date', 'desc')
                         ->orderBy('created_at', 'desc')
@@ -26,7 +25,6 @@ class ExpenseController extends Controller
         
         $totalExpenses = Auth::user()->expenses()->sum('amount');
         
-        // For AJAX requests, return JSON with pagination data
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'expenses' => $expenses->items(),

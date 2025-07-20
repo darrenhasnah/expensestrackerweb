@@ -19,8 +19,10 @@ Fitur pagination yang telah diimplementasikan memungkinkan user untuk:
 ```php
 public function dashboard(Request $request)
 {
+<<<<<<< HEAD
     $perPage = 10;
-    
+=======
+
     // Get expenses dengan pagination Laravel built-in
     $expenses = Auth::user()->expenses()
                     ->orderBy('date', 'desc')
