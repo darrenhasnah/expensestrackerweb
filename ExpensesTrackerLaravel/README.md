@@ -1,3 +1,10 @@
+- Darren Hasnah (03082230014)
+Register/login dengan auto hash password, Database design, csrf protection, AJAX
+
+- Vincent Frenando Tan (03082230007)
+Dashboard, Fitur CRUD, Statistics, AJAX
+
+
 # 💰 Expenses Tracker Laravel
 
 <p align="center">
@@ -12,47 +19,55 @@
   Aplikasi web untuk melacak dan mengelola pengeluaran pribadi dengan dashboard yang modern dan responsif.
 </p>
 
----
-
-## 🚀 Quick Start Guide
-
-### 📋 Prerequisites
-
 Pastikan sudah terinstall:
 - **PHP 8.2+** dengan extensions: `mbstring`, `xml`, `ctype`, `json`, `bcmath`, `fileinfo`
 - **Composer** (Dependency Manager untuk PHP)
 - **Node.js 18+** dan **npm** (untuk asset building)
 - **MySQL/PostgreSQL** (Database)
+Laravel Expenses Tracker UAS Web 2
+- Darren Hasnah (03082230014)
+Register/login dengan auto hash password, Database design, csrf protection, AJAX
 
-### 🛠️ Installation Steps
+- Vincent Frenando Tan (03082230007)
+Dashboard, Fitur CRUD, Statistics, AJAX
 
-#### 1️⃣ **Clone Repository**
+Sebuah aplikasi Laravel sederhana untuk melacak pengeluaran.
+
+Installation Steps
+1. Clone Repository
+
+Clone project ini ke komputer kamu lalu pindah ke folder project.
+
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/darrenhasnah/expensestrackerweb.git
+
 cd ExpensesTrackerLaravel
 ```
 
-#### 2️⃣ **Install PHP Dependencies**
+2. Install PHP Dependencies
+Install semua library PHP yang dibutuhkan dengan Composer.
+
 ```bash
 composer install
 ```
 
-#### 3️⃣ **Install Node.js Dependencies**
+3. Install Node.js Dependencies
+Install semua package frontend menggunakan npm.
 ```bash
 npm install
 ```
 
-#### 4️⃣ **Environment Setup**
-```bash
-# Copy environment file
-cp .env.example .env
+4. Environment Setup
+Salin file environment contoh lalu buat application key.
 
-# Generate application key
+```bash
+cp .env.example .env
 php artisan key:generate
 ```
 
-#### 5️⃣ **Database Configuration**
-Edit file `.env` dan sesuaikan database settings:
+5. Database Configuration
+Buka file `.env` dan atur konfigurasi database sesuai dengan pengaturan MySQL kamu.
+
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -62,32 +77,29 @@ DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
 
-#### 6️⃣ **Database Migration**
+6. Database Migration
+Buat tabel di database dan (opsional) tambahkan data contoh.
 ```bash
-# Create database tables
 php artisan migrate
-
-# (Optional) Seed sample data
 php artisan db:seed
 ```
 
-#### 7️⃣ **Build Assets**
+7. Build Assets
+Bangun aset frontend.
 ```bash
-# For development (with hot reload)
 npm run dev
-
-# For production (optimized)
+# atau untuk produksi
 npm run build
 ```
 
-#### 8️⃣ **Start Development Server**
+8. Start Development Server
+Jalankan server development Laravel.
 ```bash
 php artisan serve
 ```
 
-🎉 **Dashboard akan tersedia di:** `http://localhost:8000`
+Aplikasi bisa diakses melalui: [http://localhost:8000](http://localhost:8000)
 
----
 
 ## 🔄 Workflow untuk Multi-Device Development
 
@@ -107,7 +119,7 @@ composer install
 npm install
 ```
 
-#### **Step 3: Rebuild Assets** ⚠️ **PENTING!**
+#### **Step 3: Rebuild Assets**
 ```bash
 # Build assets untuk production
 npm run build

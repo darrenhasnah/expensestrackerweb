@@ -19,7 +19,7 @@ Fitur pagination yang telah diimplementasikan memungkinkan user untuk:
 ```php
 public function dashboard(Request $request)
 {
-    $perPage = 10; // Limit 10 items per page - optimal untuk UX
+    $perPage = 10;
     
     // Get expenses dengan pagination Laravel built-in
     $expenses = Auth::user()->expenses()
@@ -48,14 +48,6 @@ public function dashboard(Request $request)
     return view('dashboard', compact('expenses', 'totalExpenses'));
 }
 ```
-
-**✅ Keunggulan:**
-- **Automatic pagination** dengan Laravel `paginate()`
-- **AJAX-ready** dengan conditional JSON response
-- **Security** - hanya user yang login bisa akses data mereka
-- **Performance** - query optimization dengan limit
-
----
 
 ### **2. FRONTEND (Blade Template & JavaScript)**
 
