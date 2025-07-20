@@ -19,7 +19,7 @@ Fitur pagination yang telah diimplementasikan memungkinkan user untuk:
 ```php
 public function dashboard(Request $request)
 {
-    $perPage = 10; // Limit 10 items per page - optimal untuk UX
+    $perPage = 8;
     
     // Get expenses dengan pagination Laravel built-in
     $expenses = Auth::user()->expenses()
